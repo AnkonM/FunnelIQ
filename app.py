@@ -138,8 +138,10 @@ def build_and_train(_df):
     y = df["Revenue"]
 
     num_pipe = Pipeline([("imp", SimpleImputer(strategy="median")), ("sc", StandardScaler())])
+    import sklearn as _sk; _skv = tuple(int(x) for x in _sk.__version__.split(".")[:2])
+    _ohe_kw = {"sparse_output": False} if _skv >= (1, 2) else {"sparse": False}
     cat_pipe = Pipeline([("imp", SimpleImputer(strategy="most_frequent")),
-                         ("ohe", OneHotEncoder(drop="first", sparse_output=False, handle_unknown="ignore"))])
+                         ("ohe", OneHotEncoder(drop="first", handle_unknown="ignore", **_ohe_kw))])
     pre = ColumnTransformer([("num", num_pipe, NUM_COLS), ("cat", cat_pipe, CAT_COLS)])
     clf = LogisticRegression(random_state=42, max_iter=1000, class_weight="balanced")
     pipe = Pipeline([("pre", pre), ("clf", clf)])
