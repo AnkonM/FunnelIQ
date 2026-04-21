@@ -88,17 +88,36 @@ PLOT_BG = dict(
 # DATA LOADING
 # ─────────────────────────────────────────────────────────────
 DATA_PATH = "online_shoppers_intention.csv"
-DATA_URL  = "https://archive.ics.uci.edu/ml/machine-learning-databases/00468/online_shoppers_intention.csv"
+# Primary: UCI repo. Fallback: GitHub raw (more reliable on Cloud)
+DATA_URLS = [
+    "https://archive.ics.uci.edu/ml/machine-learning-databases/00468/online_shoppers_intention.csv",
+    "https://raw.githubusercontent.com/uci-ml-repo/ucimlrepo/main/src/ucimlrepo_data/online_shoppers_intention.csv",
+]
 
 @st.cache_data(show_spinner=False)
 def load_data():
-    if not os.path.exists(DATA_PATH):
-        urllib.request.urlretrieve(DATA_URL, DATA_PATH)
-    df = pd.read_csv(DATA_PATH)
+    # Prefer local file (fast for local dev); fall back to remote download
+    if os.path.exists(DATA_PATH):
+        df = pd.read_csv(DATA_PATH)
+    else:
+        df = None
+        last_err = None
+        for url in DATA_URLS:
+            try:
+                df = pd.read_csv(url)
+                break
+            except Exception as e:
+                last_err = e
+        if df is None:
+            st.error(
+                f"Could not load dataset from any source. Last error: {last_err}\n\n"
+                "Please ensure 'online_shoppers_intention.csv' is in the repository root."
+            )
+            st.stop()
     df["Revenue"] = df["Revenue"].astype(int)
     return df
 
-with st.spinner("Loading dataset…"):
+with st.spinner("Loading dataset\u2026"):
     df_raw = load_data()
 
 # ─────────────────────────────────────────────────────────────
