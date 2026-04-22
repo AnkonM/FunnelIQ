@@ -728,13 +728,12 @@ elif page == "predict":
             </div>""", unsafe_allow_html=True)
         else:
             st.markdown("""<div style="background:#1e293b;border:2px dashed #334155;
-                border-radius:16px;padding:3rem;text-align:center;margin-top:.5rem;">
-              
-              <div style="color:#64748b;font-size:.9rem;">
-                Fill in the session parameters on the left<br>
-                and click <b style="color:#0ea5e9;">Predict Conversion Probability</b>
-              </div>
-            </div>""", unsafe_allow_html=True)
+border-radius:16px;padding:3rem;text-align:center;margin-top:.5rem;">
+<div style="color:#64748b;font-size:.9rem;">
+Fill in the session parameters on the left<br>
+and click <b style="color:#0ea5e9;">Predict Conversion Probability</b>
+</div>
+</div>""", unsafe_allow_html=True)
 
 # ═══════════════════════════════════════════════════════════════
 # PAGE: ABOUT
