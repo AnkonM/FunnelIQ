@@ -21,7 +21,7 @@ import os, urllib.request
 st.set_page_config(
     page_title="FunnelIQ – E-Commerce Analytics",
     layout="wide",
-    page_icon="🛒",
+    page_icon=":shopping_trolley:",
     initial_sidebar_state="expanded",
 )
 
@@ -210,12 +210,12 @@ funnel = compute_funnel(df_raw)
 # ─────────────────────────────────────────────────────────────
 # SIDEBAR
 # ─────────────────────────────────────────────────────────────
-st.sidebar.markdown("## 🛒 FunnelIQ")
+st.sidebar.markdown("## FunnelIQ")
 st.sidebar.markdown("*AI-Powered E-Commerce Analytics*")
 st.sidebar.markdown("---")
 
-NAV_LABELS = ["🏠 Overview", "📉 Funnel Analysis", "🤖 Model & Insights",
-              "🔮 Prediction Tool", "📖 About"]
+NAV_LABELS = ["Overview", "Funnel Analysis", "Model & Insights",
+              "Prediction Tool", "About"]
 NAV_KEYS   = ["overview", "funnel", "model", "predict", "about"]
 
 # Use index-based selectbox to avoid empty label issue on older Streamlit
@@ -236,7 +236,7 @@ st.sidebar.markdown(f"**AUC-ROC:** `{roc_auc:.3f}`")
 # ─────────────────────────────────────────────────────────────
 st.markdown("""
 <div class="main-header">
-  <h1>📊 FunnelIQ – Conversion Intelligence</h1>
+  <h1>FunnelIQ – Conversion Intelligence</h1>
   <p>Real-time funnel analytics &amp; ML-powered buy-intent scoring for E-Commerce</p>
   <span class="header-badge">UCI DATASET · LOGISTIC REGRESSION · STREAMLIT</span>
 </div>
@@ -612,7 +612,7 @@ elif page == "model":
 # PAGE: PREDICTION TOOL
 # ═══════════════════════════════════════════════════════════════
 elif page == "predict":
-    st.markdown('<div class="section-header">🔮 Live Conversion Probability Estimator</div>',
+    st.markdown('<div class="section-header">Live Conversion Probability Estimator</div>',
                 unsafe_allow_html=True)
     st.markdown("""<div class="insight-box">
     Enter session attributes and the Logistic Regression model will estimate the probability
@@ -624,7 +624,7 @@ elif page == "predict":
     inp_col, out_col = st.columns([1.1, 1])
     with inp_col:
         with st.form("predict_form"):
-            st.markdown("**📄 Page Behaviour**")
+            st.markdown("**Page Behaviour**")
             ra, rb, rc = st.columns(3)
             in_admin     = ra.number_input("Admin Pages",      0, 100,   2)
             in_admin_dur = rb.number_input("Admin Dur. (s)",   0, 10000, 50)
@@ -634,7 +634,7 @@ elif page == "predict":
             in_prod      = re.number_input("Product Pages",    0, 500,   15)
             in_prod_dur  = rf.number_input("Product Dur. (s)", 0, 50000, 600)
 
-            st.markdown("**📊 Quality Signals**")
+            st.markdown("**Quality Signals**")
             rg, rh = st.columns(2)
             in_bounce   = rg.slider("Bounce Rate",  0.0, 0.20, 0.02, step=0.005, format="%.3f")
             in_exit     = rh.slider("Exit Rate",    0.0, 0.20, 0.04, step=0.005, format="%.3f")
@@ -642,13 +642,13 @@ elif page == "predict":
             in_pageval  = ri.number_input("Page Value (GA)", 0.0, 500.0, 25.0, step=1.0)
             in_specday  = rj.slider("Special Day Proximity", 0.0, 1.0, 0.0)
 
-            st.markdown("**👤 Visitor Context**")
+            st.markdown("**Visitor Context**")
             rk, rl = st.columns(2)
             in_month    = rk.selectbox("Month", ["Jan","Feb","Mar","Apr","May","June",
                                                   "Jul","Aug","Sep","Oct","Nov","Dec"])
             in_visitor  = rl.selectbox("Visitor Type",
                                         ["Returning_Visitor", "New_Visitor", "Other"])
-            submitted = st.form_submit_button("⚡ Predict Conversion Probability",
+            submitted = st.form_submit_button("Predict Conversion Probability",
                                               use_container_width=True)
 
     with out_col:
@@ -671,11 +671,11 @@ elif page == "predict":
             pct  = prob * 100
 
             if pct < 30:
-                bar_color, zone, icon = "#ef4444", "Low Intent", "🚨"
+                bar_color, zone, intent_key = "#ef4444", "Low Intent", "low"
             elif pct < 60:
-                bar_color, zone, icon = "#f59e0b", "Moderate Intent", "💡"
+                bar_color, zone, intent_key = "#f59e0b", "Moderate Intent", "moderate"
             else:
-                bar_color, zone, icon = "#22c55e", "High Intent", "✅"
+                bar_color, zone, intent_key = "#22c55e", "High Intent", "high"
 
             fig_g = go.Figure(go.Indicator(
                 mode="gauge+number+delta",
@@ -704,21 +704,21 @@ elif page == "predict":
             st.plotly_chart(fig_g, use_container_width=True)
 
             st.markdown(f"""<div style="text-align:center;margin-top:.3rem;">
-            <span style="font-size:1.1rem;font-weight:600;color:#e2e8f0;">{icon} {zone}</span>
+            <span style="font-size:1.1rem;font-weight:600;color:#e2e8f0;">{zone}</span>
             </div>""", unsafe_allow_html=True)
 
             action_map = {
-                "🚨": ("rgba(239,68,68,.1)", "#ef4444", "Exit-Intent Discount",
+                "low":      ("rgba(239,68,68,.1)", "#ef4444", "Exit-Intent Discount",
                         "Very low conversion likelihood. Trigger an exit-intent popup with a "
                         "15% discount code to attempt last-second cart recovery."),
-                "💡": ("rgba(245,158,11,.1)", "#f59e0b", "Gentle Nudge",
+                "moderate": ("rgba(245,158,11,.1)", "#f59e0b", "Gentle Nudge",
                         "Moderate intent detected. Show low-stock messaging, free-shipping "
                         "banners, or social proof to tip the purchase decision."),
-                "✅": ("rgba(34,197,94,.1)", "#22c55e", "Friction-Free Checkout",
+                "high":     ("rgba(34,197,94,.1)", "#22c55e", "Friction-Free Checkout",
                         "High intent confirmed. Suppress all popups. Ensure a fast, "
                         "seamless checkout — any friction now risks losing the sale."),
             }
-            bg, border, title, desc = action_map[icon]
+            bg, border, title, desc = action_map[intent_key]
             st.markdown(f"""
             <div style="background:{bg};border:1px solid {border};border-radius:12px;
                         padding:1.1rem;margin-top:.9rem;">
@@ -729,7 +729,7 @@ elif page == "predict":
         else:
             st.markdown("""<div style="background:#1e293b;border:2px dashed #334155;
                 border-radius:16px;padding:3rem;text-align:center;margin-top:.5rem;">
-              <div style="font-size:2.5rem;margin-bottom:.5rem;">🎯</div>
+              
               <div style="color:#64748b;font-size:.9rem;">
                 Fill in the session parameters on the left<br>
                 and click <b style="color:#0ea5e9;">Predict Conversion Probability</b>
@@ -749,7 +749,7 @@ elif page == "about":
     </div>""", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
 
-    st.markdown('<div class="section-header">📦 Dataset Details</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">Dataset Details</div>', unsafe_allow_html=True)
     dc1, dc2 = st.columns([1.5, 1])
     with dc1:
         st.markdown("""
@@ -812,24 +812,24 @@ elif page == "about":
     st.dataframe(feat_table, use_container_width=True, hide_index=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown('<div class="section-header">🗺️ Dashboard Features</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">Dashboard Features</div>', unsafe_allow_html=True)
     fc = st.columns(4)
     features = [
-        ("🏠 Overview", "KPI cards from real data, monthly trend lines, traffic-source bubble charts, and page-value box plots for an executive health snapshot."),
-        ("📉 Funnel Analysis", "5-stage drop-off funnel from Site Entry to Conversion, plus segment breakdowns by weekend, bounce rate, and operating system."),
-        ("🤖 Model & Insights", "Accuracy, Precision, Recall, F1, ROC-AUC, Confusion Matrix, probability distribution, and color-coded feature coefficient chart."),
-        ("🔮 Prediction Tool", "Enter any session's attributes to get a real-time probability gauge plus an actionable business recommendation."),
+        ("Overview", "KPI cards from real data, monthly trend lines, traffic-source bubble charts, and page-value box plots for an executive health snapshot."),
+        ("Funnel Analysis", "5-stage drop-off funnel from Site Entry to Conversion, plus segment breakdowns by weekend, bounce rate, and operating system."),
+        ("Model & Insights", "Accuracy, Precision, Recall, F1, ROC-AUC, Confusion Matrix, probability distribution, and color-coded feature coefficient chart."),
+        ("Prediction Tool", "Enter any session's attributes to get a real-time probability gauge plus an actionable business recommendation."),
     ]
     for col_w, (title, desc) in zip(fc, features):
         col_w.markdown(f"""<div class="about-feature-card">
         <h4>{title}</h4><p>{desc}</p></div>""", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown('<div class="section-header">⚙️ Technology Stack</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">Technology Stack</div>', unsafe_allow_html=True)
     tc = st.columns(5)
-    tech = [("🐍 Python 3.12", "Core language"), ("📊 Streamlit", "Dashboard framework"),
-            ("🤖 scikit-learn", "ML pipeline"),  ("📈 Plotly", "Interactive charts"),
-            ("🐼 Pandas / NumPy", "Data processing")]
+    tech = [("Python 3.12", "Core language"), ("Streamlit", "Dashboard framework"),
+            ("scikit-learn", "ML pipeline"),  ("Plotly", "Interactive charts"),
+            ("Pandas / NumPy", "Data processing")]
     for cw, (name, role) in zip(tc, tech):
         cw.markdown(f"""<div class="kpi-card">
         <div style="font-size:1.4rem;">{name.split()[0]}</div>
@@ -837,14 +837,14 @@ elif page == "about":
         <div class="kpi-label">{role}</div></div>""", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown('<div class="section-header">👥 Authors</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-header">Authors</div>', unsafe_allow_html=True)
     a1, a2 = st.columns(2)
     for cw, name, roll in [(a1,"Aishwarya Gawali","16014223007"),
                             (a2,"Ankon Mukherjee","16014223014")]:
         cw.markdown(f"""
         <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;
                     padding:1.3rem;text-align:center;">
-          <div style="font-size:2rem;">👤</div>
+          
           <div style="font-size:1rem;font-weight:700;color:#e2e8f0;">{name}</div>
           <div style="color:#0ea5e9;font-size:.88rem;font-weight:600;">{roll}</div>
           <div style="color:#64748b;font-size:.8rem;margin-top:4px;">
